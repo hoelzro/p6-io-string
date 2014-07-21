@@ -1,4 +1,4 @@
-class IO::String {
+class IO::String is IO::Handle {
     has @.contents;
 
     method print($what) {

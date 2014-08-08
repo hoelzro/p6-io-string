@@ -1,4 +1,4 @@
-class IO::String is IO::Handle {
+class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
     has @.contents;
 
     method print($what) {

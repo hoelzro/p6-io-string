@@ -1,3 +1,5 @@
+use v6;
+
 =head1 TITLE
 IO::String
 =head1 SYNOPSIS

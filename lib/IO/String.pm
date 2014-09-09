@@ -38,8 +38,8 @@ TODO
 class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
     has @.contents;
 
-    method print($what) {
-        @.contents.push: ~$what;
+    method print(*@what) {
+        @.contents.push: @what.join('');
     }
 
     #| Returns, as a string, everything that's been written to

@@ -36,10 +36,48 @@ TODO
 
 #| An L<IO::Handle> implementation that writes to memory.
 class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
-    has @.contents;
+    has Str $.buffer = '';
+    has Int $.pos = 0;
+
+    multi method open(IO::String:D:) {
+        my Str $new-buffer = '';
+        $!buffer := $new-buffer;
+        $!pos = 0;
+    }
+
+    multi method open(IO::String:D: Str $buffer is rw) {
+        $!buffer := $buffer;
+        $!pos = 0;
+    }
+
+    multi method open(IO::String:D: Str $buffer) {
+        my Str $new-buffer = $buffer;
+        $!buffer := $new-buffer;
+        $!pos = 0;
+    }
+
+    method get(IO::String:D:) {
+        return Nil if $.pos >= $.buffer.chars;
+
+        my $start = $.pos;
+        my $next-nl = $.nl-in.map({
+            $_ => $^nl with $.buffer.index($^nl, $start)
+        }).grep(*.key.defined).sort(&infix:<<=>>)[0];
+        without $next-nl {
+            $!pos = $.buffer.chars;
+            return $.buffer.substr($start);
+        }
+
+        my $len = 1 + $next-nl.key - $start;
+        $!pos += $len;
+        $len -= $next-nl.value.chars if $.chomp;
+        $.buffer.substr($start, $len);
+    }
+
+    method eof(IO::String:D:) { $.pos >= $.buffer.chars }
 
     method print(*@what) {
-        @.contents.push: @what.join('');
+        $!buffer ~= @what.join('');
     }
 
     method print-nl {
@@ -48,5 +86,5 @@ class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
 
     #| Returns, as a string, everything that's been written to
     #| this object.
-    method Str { @.contents.join('') }
+    method Str { $!buffer }
 }

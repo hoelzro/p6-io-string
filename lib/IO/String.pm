@@ -99,21 +99,27 @@ class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
     }
 
     method get(IO::String:D:) {
-        return Nil if $.pos >= $.buffer.chars;
+        return Nil if $!pos >= $.buffer.chars;
 
-        my $start = $.pos;
-        my $next-nl = $.nl-in.map({
+        my $start = $!pos;
+        my $next-nl = [min] $.nl-in.map({
             $_ => $^nl with $.buffer.index($^nl, $start)
-        }).grep(*.key.defined).sort(&infix:<<=>>)[0];
+        }).grep(*.key.defined);
         without $next-nl {
             $!pos = $.buffer.chars;
             return $.buffer.substr($start);
         }
 
-        my $len = 1 + $next-nl.key - $start;
-        $!pos += $len;
-        $len -= $next-nl.value.chars if $.chomp;
-        $.buffer.substr($start, $len);
+        my $chars = 1 + $next-nl.key - $start;
+        $!pos += $chars;
+        $chars -= $next-nl.value.chars if $.chomp;
+        $.buffer.substr($start, $chars);
+    }
+
+    method readchars(IO::String:D: Int(Cool:D) $chars = 65536) {
+        my $start = $!pos;
+        $!pos = $!pos + $chars min $.buffer.chars;
+        $.buffer.substr($start, $chars);
     }
 
     method eof(IO::String:D:) { $.pos >= $.buffer.chars }

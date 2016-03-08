@@ -39,18 +39,18 @@ class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
     has Str $.buffer = '';
     has Int $.pos = 0;
 
-    multi method open(IO::String:D:) {
-        my Str $new-buffer = '';
-        $!buffer := $new-buffer;
-        $!pos = 0;
+    multi method open(IO::String:D: Str $buffer is rw, Bool :$bind) {
+        if $bind {
+            $!buffer := $buffer;
+            $!pos = 0;
+        }
+        else {
+            nextwith("$buffer");
+        }
     }
 
-    multi method open(IO::String:D: Str $buffer is rw) {
-        $!buffer := $buffer;
-        $!pos = 0;
-    }
-
-    multi method open(IO::String:D: Str $buffer) {
+    multi method open(IO::String:D: Str $buffer = '') {
+        # In case of binding in previous open, bind a new one
         my Str $new-buffer = $buffer;
         $!buffer := $new-buffer;
         $!pos = 0;

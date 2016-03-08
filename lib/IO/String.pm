@@ -130,7 +130,9 @@ class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
         } min $!buffer.chars) max 0;
     }
 
-    multi method tell(IO::String:D:) { $!pos }
+    method tell(IO::String:D:) { $!pos }
+
+    method flush(IO::String:D:) { }
 
     method eof(IO::String:D:) { $.pos >= $.buffer.chars }
 

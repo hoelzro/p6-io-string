@@ -122,6 +122,16 @@ class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
         $.buffer.substr($start, $chars);
     }
 
+    multi method seek(IO::String:D: Int:D $offset, SeekType:D $whence = SeekFromBeginning) {
+        $!pos = (do given $whence {
+            when SeekFromBeginning { $offset }
+            when SeekFromCurrent   { $!pos + $offset }
+            when SeekFromEnd       { $!buffer.chars + $offset }
+        } min $!buffer.chars) max 0;
+    }
+
+    multi method tell(IO::String:D:) { $!pos }
+
     method eof(IO::String:D:) { $.pos >= $.buffer.chars }
 
     method print(*@what) {

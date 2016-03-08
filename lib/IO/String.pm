@@ -39,6 +39,42 @@ TODO
 =item Handle encodings
 =end head1
 
+=head1 METHODS
+=begin head2
+method new
+
+    method new(
+        Str :$buffer = '',
+        Str :$pos = 0,
+        Str :$chomp = True,
+        Str :$nl-in = ["\x0a", "\r\n"],
+        Str:D :$nl-out = "\n",
+    ) returns IO::String:D
+
+This creates a new IO::String handle. Every IO::String is also a L<IO::Handle> and can be used in place of a file handle. The C<$buffer> is the string to read from or write to. The C<$pos> is the current position to start the next read or write.
+
+The C<$chomp>, C<$nl-in>, and C<$nl-out> options are from of IO::Handle. When reading line-by-line, C<$chomp> the chomp setting is used to determine whether the line endings should be chomped or left in place. The C<$nl-in> is an array of strings that will be used to end line records during reads and C<$nl-out> is the string that will be appended for new lines at the end of any output line record.
+=end head2
+
+=begin head2
+method open
+
+    multi method open(
+        Str $buffer is rw,
+        Bool :$bind,
+    );
+    multi method open(Str $buffer)
+
+This tells the IO::String object to start working with a new string. Passing a variable and setting the C<:bind> option will result in that value being bound to the IO::String object. Any write to the handle will result in a change to the original string. For example,
+
+    my $s;
+    my $h = IO::String.new;
+    $h.open($s, :bind);
+    $h.say("hello");
+    say $s; # T<hello> <-- the original string changed
+
+With C<:bind> set to false or without being passed, the string will not be bound and changes to the handle will I<not> change the original.
+=end head2
 
 #| An L<IO::Handle> implementation that writes to memory.
 class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {

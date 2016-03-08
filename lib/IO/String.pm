@@ -6,12 +6,19 @@ IO::String
 =begin code
     use IO::String;
 
+    # Using IO to write a Str
     my $buffer = IO::String.new;
     {
         my $*OUT = $buffer;
         say "hello";
     }
     say ~$buffer; # T<hello>
+
+    # Using IO to read a Str
+    my $sh = IO::String.new(:$buffer)
+    for $sh.lines -> $line {
+        say $line; # T<hello>
+    }
 
 =end code
 =begin head1
@@ -29,7 +36,6 @@ exists.  Loosely based on Perl 5's IO::String.
 =begin head1
 TODO
 
-=item Input as well as output
 =item Handle encodings
 =end head1
 

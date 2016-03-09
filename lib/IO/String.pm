@@ -166,5 +166,20 @@ class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
 
     #| Returns, as a string, everything that's been written to
     #| this object.
-    method Str { $!buffer }
+    multi method Str(IO::String:D:) { $!buffer }
+
+    multi method gist(IO::String:D:) {
+        my $gist-str = $!buffer.chars > 100 ?? $!buffer.chars.substr(0, 100) ~ "..." !! $!buffer;
+        "IO::String<$gist-str>(opened at $!pos)"
+    }
+
+    multi method perl(IO::String:D:) {
+        my @options =
+            ":buffer({$!buffer.perl})",
+            do { ":chomp({$.chomp.perl})" } if $.chomp,
+            do { ":pos({$!pos.perl})"     } if $.pos,
+            ;
+
+        "IO::String.new(" ~ @options.join(', ') ~ ")"
+    }
 }

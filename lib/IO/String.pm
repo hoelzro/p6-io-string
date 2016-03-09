@@ -124,6 +124,8 @@ class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
     }
 
     method readchars(IO::String:D: Int(Cool:D) $chars = 65536) {
+        return Str if $.eof;
+
         my $start = $!pos;
         $!pos = $!pos + $chars min $.buffer.chars;
         $.buffer.substr($start, $chars);

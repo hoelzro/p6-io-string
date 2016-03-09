@@ -81,21 +81,21 @@ class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
     has Str $.buffer = '';
     has Int $.pos = 0;
 
-    multi method open(IO::String:D: Str $buffer is rw, Bool :$bind) {
+    multi method open(IO::String:D: Str $buffer is rw, Bool :$bind, :$a) {
         if $bind {
             $!buffer := $buffer;
-            $!pos = 0;
+            $!pos = $a ?? $!buffer.chars !! 0;
         }
         else {
-            nextwith("$buffer");
+            nextwith("$buffer", :$a);
         }
     }
 
-    multi method open(IO::String:D: Str $buffer = '') {
+    multi method open(IO::String:D: Str $buffer = '', :$a) {
         # In case of binding in previous open, bind a new one
         my Str $new-buffer = $buffer;
         $!buffer := $new-buffer;
-        $!pos = 0;
+        $!pos = $a ?? $!buffer.chars !! 0;
     }
 
     method get(IO::String:D:) {
@@ -143,11 +143,19 @@ class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
 
     method eof(IO::String:D:) { $.pos >= $.buffer.chars }
 
-    method print(*@what) {
-        $!buffer ~= @what.join('');
+    method print(IO::String:D: *@what --> True) {
+        if $!pos >= $!buffer.chars {
+            $!buffer ~= @what.map({ .Str }).join('');
+            $!pos = $!buffer.chars;
+        }
+        else {
+            my $chars = [+] @what.map({ .chars });
+            substr-rw($!buffer, $!pos, $chars) = @what.map({ .Str }).join('');
+            $!pos = $!buffer.chars min ($!pos + $chars);
+        }
     }
 
-    method print-nl {
+    method print-nl(IO::String:D: --> True) {
         self.print($.nl-out);
     }
 

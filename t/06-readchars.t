@@ -2,7 +2,7 @@ use v6;
 use Test;
 use IO::String;
 
-plan 21;
+plan 22;
 
 # readchars
 {
@@ -36,4 +36,6 @@ plan 21;
     is $s.readchars(10), "o,\nworld!\n", 'read last 10 characters';
     is $s.tell, 14, 'tell is 14';
     ok $s.eof, "we have eof again";
+
+    is $s.readchars(1), Str, 'read when EOF';
 }

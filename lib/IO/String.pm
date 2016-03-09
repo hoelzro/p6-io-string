@@ -174,11 +174,10 @@ class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
     }
 
     multi method perl(IO::String:D:) {
-        my @options =
-            ":buffer({$!buffer.perl})",
-            do { ":chomp({$.chomp.perl})" } if $.chomp,
-            do { ":pos({$!pos.perl})"     } if $.pos,
-            ;
+        my @options = ":buffer({$!buffer.perl})";
+
+        @options.push: ":chomp({$.chomp.perl})"  if $.chomp;
+        @options.push: ":pos({$!pos.perl})"      if $.pos;
 
         "IO::String.new(" ~ @options.join(', ') ~ ")"
     }

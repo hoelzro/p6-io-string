@@ -159,6 +159,11 @@ class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
         self.print($.nl-out);
     }
 
+    method put(IO::String:D: *@what --> True) {
+        self.print(|@what);
+        self.print-nl;
+    }
+
     #| Returns, as a string, everything that's been written to
     #| this object.
     method Str { $!buffer }

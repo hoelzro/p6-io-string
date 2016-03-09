@@ -116,6 +116,13 @@ class IO::String:ver<0.1.0>:auth<hoelzro> is IO::Handle {
         $.buffer.substr($start, $chars);
     }
 
+    method getc(IO::String:D:) {
+        return Nil if $!pos >= $.buffer.chars;
+
+        my $start = $!pos++;
+        $.buffer.substr($start, 1);
+    }
+
     method readchars(IO::String:D: Int(Cool:D) $chars = 65536) {
         my $start = $!pos;
         $!pos = $!pos + $chars min $.buffer.chars;
